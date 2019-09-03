@@ -3,6 +3,7 @@ package com.tingco.codechallenge.elevator.config;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import com.tingco.codechallenge.elevator.api.ElevatorImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,12 +18,11 @@ import com.google.common.eventbus.EventBus;
 
 /**
  * Preconfigured Spring Application boot class.
- *
  */
 @Configuration
-@ComponentScan(basePackages = { "com.tingco.codechallenge.elevator" })
+@ComponentScan(basePackages = {"com.tingco.codechallenge.elevator"})
 @EnableAutoConfiguration
-@PropertySources({ @PropertySource("classpath:application.properties") })
+@PropertySources({@PropertySource("classpath:application.properties")})
 public class ElevatorApplication {
 
     @Value("${com.tingco.elevator.numberofelevators}")
@@ -31,11 +31,15 @@ public class ElevatorApplication {
     /**
      * Start method that will be invoked when starting the Spring context.
      *
-     * @param args
-     *            Not in use
+     * @param args Not in use
      */
     public static void main(final String[] args) {
         SpringApplication.run(ElevatorApplication.class, args);
+        ElevatorImpl elevator = new ElevatorImpl();
+        System.out.println(elevator.currentFloor());
+        elevator.moveElevator(5);
+        System.out.println(elevator.getAddressedFloor());
+        System.out.println(elevator.currentFloor());
     }
 
     /**
