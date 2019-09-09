@@ -1,5 +1,6 @@
 package com.tingco.codechallenge.elevator.resources;
 
+import com.tingco.codechallenge.elevator.api.Elevator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,22 @@ public class ElevatorControllerEndPointsTest {
 
         Assert.assertEquals("pong", endPoints.ping());
 
+    }
+
+    @Test
+    public void testRequestElevatorToFloor(){
+        //Given
+        //When
+        Elevator elevator = this.endPoints.requestElevatorToFloor(1);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //Then
+        Assert.assertEquals(elevator.getAddressedFloor(), 1);
+        Assert.assertEquals(elevator.getDirection(), Elevator.Direction.NONE);
     }
 
 }

@@ -1,20 +1,14 @@
 package com.tingco.codechallenge.elevator.config;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
-import com.tingco.codechallenge.elevator.api.ElevatorImpl;
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.annotation.*;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Preconfigured Spring Application boot class.
@@ -26,7 +20,7 @@ import com.google.common.eventbus.EventBus;
 public class ElevatorApplication {
 
     @Value("${com.tingco.elevator.numberofelevators}")
-    private int numberOfElevators;
+    private static int numberOfElevators;
 
     /**
      * Start method that will be invoked when starting the Spring context.
@@ -35,11 +29,7 @@ public class ElevatorApplication {
      */
     public static void main(final String[] args) {
         SpringApplication.run(ElevatorApplication.class, args);
-        ElevatorImpl elevator = new ElevatorImpl();
-        System.out.println(elevator.currentFloor());
-        elevator.moveElevator(5);
-        System.out.println(elevator.getAddressedFloor());
-        System.out.println(elevator.currentFloor());
+
     }
 
     /**
@@ -48,7 +38,7 @@ public class ElevatorApplication {
      * @return Executor thread pool
      */
     @Bean(destroyMethod = "shutdown")
-    public Executor taskExecutor() {
+    public static Executor taskExecutor() {
         return Executors.newScheduledThreadPool(numberOfElevators);
     }
 
@@ -58,7 +48,7 @@ public class ElevatorApplication {
      * @return EventBus for async task execution
      */
     @Bean
-    public EventBus eventBus() {
+    public static EventBus eventBus() {
         return new AsyncEventBus(Executors.newCachedThreadPool());
     }
 

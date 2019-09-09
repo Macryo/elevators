@@ -9,7 +9,7 @@ import java.util.List;
  * @author Sven Wesley
  *
  */
-interface ElevatorController {
+public interface ElevatorController {
 
     /**
      * Request an elevator to the specified floor.
@@ -31,9 +31,11 @@ interface ElevatorController {
      * Telling the controller that the given elevator is free for new
      * operations.
      *
-     * @param elevator
-     *            the elevator that shall be released.
+     * @param elevatorId
+     *            id of the elevator that shall be released.
      */
-    void releaseElevator(Elevator elevator);
+    void releaseElevator(int elevatorId);
+
+    void initWithElevatorsList(List<Elevator> elevators);
 
 }

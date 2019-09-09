@@ -4,9 +4,8 @@ package com.tingco.codechallenge.elevator.api;
  * Interface for an elevator object.
  *
  * @author Sven Wesley
- *
  */
-interface Elevator {
+public interface Elevator {
 
     /**
      * Enumeration for describing elevator's direction.
@@ -39,8 +38,7 @@ interface Elevator {
     /**
      * Command to move the elevator to the given floor.
      *
-     * @param toFloor
-     *            int where to go.
+     * @param toFloor int where to go.
      */
     void moveElevator(int toFloor);
 
@@ -50,6 +48,21 @@ interface Elevator {
      * @return true if busy.
      */
     boolean isBusy();
+
+
+    /**
+     * Changes current status of the elevator.
+     *
+     * @param status status to be set.
+     */
+    void setBusyStatus(boolean status);
+
+    /**
+     * Changes current direction of the elevator.
+     *
+     * @param direction to be set.
+     */
+    void setDirection(Direction direction);
 
     /**
      * Reports which floor the elevator is at right now.

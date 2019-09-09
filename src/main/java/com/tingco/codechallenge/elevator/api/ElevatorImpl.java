@@ -1,20 +1,28 @@
 package com.tingco.codechallenge.elevator.api;
 
-
-import com.tingco.codechallenge.elevator.api.Elevator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Component
 public class ElevatorImpl implements Elevator {
 
+    private Log log = LogFactory.getLog(getClass());
     private Direction currentDirection;
     private int currentFloor;
     private int addressedFloor;
-    private boolean isBusy;
+    private volatile boolean isBusy;
+    private int id;
+
+    public ElevatorImpl(int id) {
+        this.currentDirection = Direction.NONE;
+        this.currentFloor = 0;
+        this.addressedFloor = 0;
+        this.isBusy = false;
+        this.id = id;
+    }
 
     public ElevatorImpl() {
         this.currentDirection = Direction.NONE;
@@ -35,36 +43,27 @@ public class ElevatorImpl implements Elevator {
 
     @Override
     public int getId() {
-        return this.hashCode();
+        return this.id > 0 ? id : hashCode();
     }
 
 
     @Override
-    public void moveElevator(int toFloor) {
-        if (toFloor != this.currentFloor && !isBusy()) {
-            this.isBusy = true;
-            this.addressedFloor = toFloor;
-            this.transit(this.currentFloor, this.addressedFloor);
+    public synchronized void moveElevator(int toFloor) {
+        this.setBusyStatus(true);
+        this.addressedFloor = toFloor;
+        if (toFloor >= 0) {
+            this.setDirection(toFloor > this.currentFloor() ? Elevator.Direction.UP : Elevator.Direction.DOWN);
+            try {
+                TimeUnit.MILLISECONDS.sleep(100 * Math.abs(toFloor - this.currentFloor));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.currentDirection = Direction.NONE;
+            this.currentFloor = toFloor;
+        } else {
+            log.warn("Can't ride from " + this.currentFloor + " to " + toFloor + "!");
         }
-    }
-
-    private void transit(int from, int to) {
-
-        this.currentDirection = from > to ? Direction.DOWN : Direction.UP;
-        int difference = Math.abs(from - to);
-
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        for (int i = 0; i < difference; i++) {
-            executorService.schedule(() -> {
-                this.changeFloor(from, to);
-            }, 3, TimeUnit.SECONDS);
-        }
-        this.isBusy = false;
-    }
-
-    private void changeFloor(int from, int to) {
-        this.currentFloor += from > to ? -1 : 1;
-        System.out.println(this.currentFloor());
+        this.setBusyStatus(false);
     }
 
     @Override
@@ -73,7 +72,28 @@ public class ElevatorImpl implements Elevator {
     }
 
     @Override
+    public void setBusyStatus(boolean status) {
+        this.isBusy = status;
+    }
+
+    @Override
     public int currentFloor() {
         return this.currentFloor;
     }
+
+    @Override
+    public void setDirection(Direction direction) {
+        this.currentDirection = direction;
+    }
+
+    @Override
+    public String toString() {
+        return "Elevator" + getId() + "{" +
+                "currentDirection=" + currentDirection +
+                ", currentFloor=" + currentFloor +
+                ", addressedFloor=" + addressedFloor +
+                ", isBusy=" + isBusy +
+                '}';
+    }
 }
+
